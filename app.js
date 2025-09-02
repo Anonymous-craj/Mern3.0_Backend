@@ -5,6 +5,9 @@ const app = express();
 app.use(express.json());
 
 const connectToDB = require("./database");
+const { storage, multer } = require("./middleware/multerConfig");
+const upload = multer({ storage: storage });
+const Blog = require("./model/blogModel");
 
 app.get("/", (req, res) => {
   res.json({
@@ -12,10 +15,22 @@ app.get("/", (req, res) => {
   });
 });
 
-app.post("/blog", (req, res) => {
-  console.log(req.body);
+app.post("/blog", upload.single("image"), async (req, res) => {
+  const { title, subtitle, description, image } = req.file;
+  // if (!title || !subtitle || !description || !image) {
+  //   return res.status(400).json({
+  //     message: "All fields are required!",
+  //   });
+  // }
+
+  await Blog.create({
+    title: title,
+    subtitle: subtitle,
+    description: description,
+    image: image,
+  });
   res.status(200).json({
-    message: "Blog api triggered!",
+    message: "Table created successfully!",
   });
 });
 
