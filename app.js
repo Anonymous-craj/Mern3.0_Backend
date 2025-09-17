@@ -13,7 +13,7 @@ const Blog = require("./model/blogModel");
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "https://mern3-0-backend.onrender.com"],
   })
 );
 
