@@ -13,7 +13,7 @@ const Blog = require("./model/blogModel");
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://mern3-0-backend.onrender.com"],
+    origin: ["http://localhost:5173", "https://blogcms-ten.vercel.app/"],
   })
 );
 
@@ -135,6 +135,6 @@ app.patch("/blog/:id", upload.single("image"), async (req, res) => {
 
 app.use(express.static("./storage/"));
 
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT || 4000, () => {
   console.log("Nodejs server has started at 3000!");
 });
