@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 
+const cors = require("cors");
 app.use(express.json());
 
 const fs = require("fs");
@@ -9,6 +10,12 @@ const connectToDB = require("./database");
 const { storage, multer } = require("./middleware/multerConfig");
 const upload = multer({ storage: storage });
 const Blog = require("./model/blogModel");
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+);
 
 connectToDB();
 app.get("/", (req, res) => {
@@ -20,8 +27,14 @@ app.get("/", (req, res) => {
 //Create Operation
 app.post("/blog", upload.single("image"), async (req, res) => {
   const { title, subtitle, description } = req.body;
-  const { filename } = req.file;
-  console.log(req.file);
+  let filename;
+  if (req.file) {
+    filename = "http://localhost:3000/" + req.file.filename;
+  } else {
+    filename =
+      "https://imgs.search.brave.com/Sh2-75lG-3P9YL5pcTIKu7NUjTFhGsnkqz-hptUwG7I/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJjYXQuY29t/L3cvZnVsbC8wLzAv/Ni80NjY0OC0zNDQw/eDE0NDAtZGVza3Rv/cC1kdWFsLXNjcmVl/bi1yaWNrLWFuZC1t/b3J0eS13YWxscGFw/ZXItcGhvdG8uanBn";
+  }
+
   if (!title || !subtitle || !description) {
     return res.status(400).json({
       message: "All fields are required!",
@@ -119,6 +132,8 @@ app.patch("/blog/:id", upload.single("image"), async (req, res) => {
     message: "Blog updated successfully!",
   });
 });
+
+app.use(express.static("./storage/"));
 
 app.listen(process.env.PORT, () => {
   console.log("Nodejs server has started at 3000!");
